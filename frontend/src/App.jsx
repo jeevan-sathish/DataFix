@@ -6,19 +6,21 @@ const App = () => {
 
   const handleFileUpload =(e)=>{
     setFile(e.target.files[0])
+
   }
 
-  const handleFileSubmit =async ()=>{
-    const formData = new FormData()
-    formData.append("file",file)
+  const handleFileSubmit= async ()=>{
+
+    const formdata =new FormData()
+    formdata.append('file',file)
 
     const res =await fetch("http://127.0.0.1:5000/upload",{
       method:"POST",
-      body:formData
+      body:formdata
     })
 
     const result = await res.json()
-    setData(result)
+    setData(result.data)
 
   }
   return (
