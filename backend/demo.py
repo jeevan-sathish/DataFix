@@ -33,17 +33,16 @@
 #     print(req, "handled by", server)
 #     index = (index + 1) % len(servers)
 
-servers = ["Server1", "Server2", "Server3"]
+# servers = ["Server1", "Server2", "Server3"]
+# requests = ["Req1", "Req2", "Req3", "Req4", "Req5", "Req6"]
 
-requests = ["Req1", "Req2", "Req3", "Req4", "Req5", "Req6"]
+# index = 0
 
-index = 0
-
-for req in requests:
-    server = servers[index]
-    print(req, "handled by", server)
-    index = (index + 1) % len(servers)
-            
-        
+# for req in requests:
+#     server = servers[index]
+#     print(req, "handled by", server)
+#     index = (index + 1) % len(servers)
+           
+       
     
 
