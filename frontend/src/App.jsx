@@ -25,6 +25,7 @@ const App = () => {
   }
   return (
     <div>
+    <h1 className='text-red-500'>hello</h1>
       <input type="file" accept='.csv' onChange={handleFileUpload} />
       <button onClick={handleFileSubmit}>upload</button>
       <pre>{JSON.stringify(data,null,2)}</pre>
