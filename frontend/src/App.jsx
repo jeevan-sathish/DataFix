@@ -4,31 +4,46 @@ import { ClipLoader } from "react-spinners";
 
 export default function App() {
   const [file, setFile] = useState(null);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [before, setBefore] = useState(null);
   const [after, setAfter] = useState(null);
   const [csv, setCsv] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const API_URL = "https://datafix-2.onrender.com/upload";
 
   const uploadFile = async () => {
-    if (!file) return alert("Upload file");
+    if (!file) return alert("Please upload a CSV file");
+
+    if (!file.name.endsWith(".csv")) {
+      return alert("Only CSV files are allowed");
+    }
 
     setLoading(true);
+    setError("");
 
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("http://127.0.0.1:5000/upload", {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: formData,
+      });
 
-    const result = await res.json();
+      const result = await res.json();
 
-    setData(result.data);
-    setBefore(result.before);
-    setAfter(result.after);
-    setCsv(result.csv);
+      if (!res.ok) throw new Error("Server error");
+
+      setData(result.data || []);
+      setBefore(result.before);
+      setAfter(result.after);
+      setCsv(result.csv);
+    } catch (err) {
+      setError("⚠️ Failed to process file. Try again.");
+      console.error(err);
+    }
 
     setLoading(false);
   };
@@ -44,82 +59,106 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen bg-black text-white flex flex-col">
       {/* Header */}
-
-      <header className="bg-indigo-600 text-white p-4 shadow">
-        <div className="flex items-center gap-2 text-2xl font-bold">
+      <header className="bg-black border-b border-yellow-500 p-4 flex items-center justify-center">
+        <h1 className="text-2xl font-bold text-yellow-400 flex items-center gap-2">
           <FaDatabase /> DataFix
-        </div>
+        </h1>
       </header>
 
       {/* Main */}
-
-      <main className="flex-1 p-10">
-        <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-xl p-8">
-          <h1 className="text-3xl font-bold mb-6 text-center">
+      <main className="flex-1 p-6 md:p-10">
+        <div className="max-w-6xl mx-auto bg-[#111] border border-yellow-500 rounded-xl p-6 shadow-lg">
+          <h2 className="text-3xl font-bold text-center text-yellow-400 mb-6">
             Clean Your Dataset Instantly
-          </h1>
+          </h2>
 
+          {/* Upload Section */}
           <div className="flex flex-col items-center gap-4">
             <input
               type="file"
               accept=".csv"
               onChange={(e) => setFile(e.target.files[0])}
-              className="border p-2 rounded"
+              className="bg-black border border-yellow-500 p-2 rounded"
             />
 
             <button
               onClick={uploadFile}
-              className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
+              className="flex items-center gap-2 bg-yellow-500 text-black px-6 py-2 rounded font-semibold hover:bg-yellow-400 transition"
             >
               <FaUpload /> Upload Dataset
             </button>
           </div>
 
+          {/* Loading */}
           {loading && (
-            <div className="flex justify-center mt-6">
-              <ClipLoader size={40} />
+            <div className="flex flex-col items-center mt-6">
+              <ClipLoader color="#FFD700" size={40} />
+              <p className="mt-2 text-gray-400">Processing your data...</p>
             </div>
           )}
 
-          {/* Data Preview */}
+          {/* Error */}
+          {error && <p className="text-red-400 text-center mt-4">{error}</p>}
 
-          {data && (
-            <div className="mt-10">
-              <h2 className="text-xl font-semibold mb-3">
+          {/* Table Preview */}
+          {data.length > 0 && (
+            <div className="mt-10 overflow-auto">
+              <h3 className="text-xl font-semibold mb-3 text-yellow-400">
                 Cleaned Data Preview
-              </h2>
+              </h3>
 
-              <pre className="bg-gray-100 p-4 rounded overflow-auto">
-                {JSON.stringify(data, null, 2)}
-              </pre>
+              <table className="w-full border border-yellow-500 text-sm">
+                <thead className="bg-yellow-500 text-black">
+                  <tr>
+                    {Object.keys(data[0]).map((key) => (
+                      <th key={key} className="p-2 border border-black">
+                        {key}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {data.map((row, idx) => (
+                    <tr key={idx} className="text-center">
+                      {Object.values(row).map((val, i) => (
+                        <td key={i} className="p-2 border border-yellow-500">
+                          {val}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
               <button
                 onClick={downloadCSV}
-                className="mt-4 flex items-center gap-2 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+                className="mt-4 flex items-center gap-2 bg-green-600 px-6 py-2 rounded hover:bg-green-500"
               >
-                <FaDownload /> Download Cleaned CSV
+                <FaDownload /> Download CSV
               </button>
             </div>
           )}
 
-          {/* Dataset Stats */}
-
+          {/* Stats */}
           {before && after && (
             <div className="grid md:grid-cols-2 gap-6 mt-10">
               <div>
-                <h3 className="font-bold text-lg mb-2">Before Cleaning</h3>
-
-                <pre className="bg-red-50 p-4 rounded text-sm overflow-auto">
+                <h3 className="text-yellow-400 font-bold mb-2">
+                  Before Cleaning
+                </h3>
+                <pre className="bg-[#1a1a1a] p-4 rounded text-xs overflow-auto">
                   {JSON.stringify(before, null, 2)}
                 </pre>
               </div>
 
               <div>
-                <h3 className="font-bold text-lg mb-2">After Cleaning</h3>
-
-                <pre className="bg-green-50 p-4 rounded text-sm overflow-auto">
+                <h3 className="text-yellow-400 font-bold mb-2">
+                  After Cleaning
+                </h3>
+                <pre className="bg-[#1a1a1a] p-4 rounded text-xs overflow-auto">
                   {JSON.stringify(after, null, 2)}
                 </pre>
               </div>
@@ -129,9 +168,8 @@ export default function App() {
       </main>
 
       {/* Footer */}
-
-      <footer className="bg-gray-900 text-white text-center p-4">
-        Built with love 💗 by jeevan S
+      <footer className="bg-black border-t border-yellow-500 text-center p-4 text-gray-400">
+        Built with 🖤 by Jeevan
       </footer>
     </div>
   );
