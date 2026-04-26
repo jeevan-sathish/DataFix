@@ -61,7 +61,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
       {/* Header */}
-      <header className="bg-black border-b border-yellow-500 p-4 flex items-center justify-center">
+      <header className="bg-black border-b border-yellow-500 p-4 flex justify-center">
         <h1 className="text-2xl font-bold text-yellow-400 flex items-center gap-2">
           <FaDatabase /> DataFix
         </h1>
@@ -70,11 +70,12 @@ export default function App() {
       {/* Main */}
       <main className="flex-1 p-6 md:p-10">
         <div className="max-w-6xl mx-auto bg-[#111] border border-yellow-500 rounded-xl p-6 shadow-lg">
+          {/* Title */}
           <h2 className="text-3xl font-bold text-center text-yellow-400 mb-6">
             Clean Your Dataset Instantly
           </h2>
 
-          {/* Upload Section */}
+          {/* Upload */}
           <div className="flex flex-col items-center gap-4">
             <input
               type="file"
@@ -102,7 +103,51 @@ export default function App() {
           {/* Error */}
           {error && <p className="text-red-400 text-center mt-4">{error}</p>}
 
-          {/* Table Preview */}
+          {/* Info Section */}
+          <h2 className="text-2xl font-bold text-center text-yellow-400 mt-12 mb-6">
+            How DataFix Works
+          </h2>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-[#111] border border-yellow-500 rounded-xl p-5 hover:scale-105 transition">
+              <h3 className="text-yellow-400 font-bold mb-2">
+                📁 Upload Dataset
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Upload your CSV file securely and prepare it for cleaning.
+              </p>
+            </div>
+
+            <div className="bg-[#111] border border-yellow-500 rounded-xl p-5 hover:scale-105 transition">
+              <h3 className="text-yellow-400 font-bold mb-2">
+                🧹 Smart Cleaning
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Removes duplicates, fills missing values, and eliminates
+                outliers.
+              </p>
+            </div>
+
+            <div className="bg-[#111] border border-yellow-500 rounded-xl p-5 hover:scale-105 transition">
+              <h3 className="text-yellow-400 font-bold mb-2">
+                📊 Data Insights
+              </h3>
+              <p className="text-gray-400 text-sm">
+                View dataset statistics before and after cleaning.
+              </p>
+            </div>
+
+            <div className="bg-[#111] border border-yellow-500 rounded-xl p-5 hover:scale-105 transition">
+              <h3 className="text-yellow-400 font-bold mb-2">
+                📥 Download Data
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Download your cleaned dataset instantly.
+              </p>
+            </div>
+          </div>
+
+          {/* Table */}
           {data.length > 0 && (
             <div className="mt-10 overflow-auto">
               <h3 className="text-xl font-semibold mb-3 text-yellow-400">
@@ -122,9 +167,12 @@ export default function App() {
 
                 <tbody>
                   {data.map((row, idx) => (
-                    <tr key={idx} className="text-center">
+                    <tr key={idx}>
                       {Object.values(row).map((val, i) => (
-                        <td key={i} className="p-2 border border-yellow-500">
+                        <td
+                          key={i}
+                          className="p-2 border border-yellow-500 text-center"
+                        >
                           {val}
                         </td>
                       ))}
